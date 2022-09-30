@@ -4,7 +4,6 @@ import (
 	"go/ast"
 )
 
-// SingleFileEntryVisitor 这部分和课堂演示差不多，但是我建议你们自己试着写一些
 type SingleFileEntryVisitor struct {
 	file *fileVisitor
 }
@@ -13,17 +12,17 @@ func (s *SingleFileEntryVisitor) Get() File {
 	if s.file != nil {
 		return s.file.Get()
 	}
-
 	return File{}
 }
 
 func (s *SingleFileEntryVisitor) Visit(node ast.Node) ast.Visitor {
 	file, ok := node.(*ast.File)
 	if ok {
-		s.file = &fileVisitor{ans: newAnnotations[*ast.File](file, file.Doc)}
+		s.file = &fileVisitor{
+			ans: newAnnotations[*ast.File](file, file.Doc),
+		}
 		return s.file
 	}
-
 	return s
 }
 
@@ -38,7 +37,6 @@ func (f *fileVisitor) Get() File {
 	for _, t := range f.types {
 		types = append(types, t.Get())
 	}
-
 	return File{
 		Annotations: f.ans,
 		Types:       types,

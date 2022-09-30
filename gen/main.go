@@ -32,22 +32,17 @@ func main() {
 }
 
 func gen(src string) error {
-	// 第一步找出符合条件的文件
 	srcFiles, err := scanFiles(src)
 	if err != nil {
 		return err
 	}
-	// 第二步，AST 解析源代码文件，拿到 service definition 定义
 	defs, err := parseFiles(srcFiles)
 	if err != nil {
 		return err
 	}
-	// 生成代码
 	return genFiles(src, defs)
 }
 
-// 根据 defs 来生成代码
-// src 是源代码所在目录，在测试里面它是 ./testdata
 func genFiles(src string, defs []http.ServiceDefinition) error {
 	for _, def := range defs {
 		name := def.GenName()
@@ -92,8 +87,6 @@ func parseFiles(srcFiles []string) ([]http.ServiceDefinition, error) {
 	return defs, nil
 }
 
-// 你需要利用 typ 来构造一个 http.ServiceDefinition
-// 注意你可能需要检测用户的定义是否符合你的预期
 func parseServiceDefinition(pkg string, typ annotation.Type) (http.ServiceDefinition, error) {
 	methods := make([]http.ServiceMethod, 0, len(typ.Fields))
 	for _, fd := range typ.Fields {
@@ -160,7 +153,7 @@ func toName(names []*ast.Ident) string {
 	return sb.String()
 }
 
-// 返回符合条件的 Go 源代码文件，也就是你要用 AST 来分析这些文件的代码
+// 返回符合条件的 Go 源代码文件
 func scanFiles(src string) ([]string, error) {
 	srcFiles := make([]string, 0, 10)
 	files, err := os.ReadDir(src)
@@ -181,7 +174,7 @@ func scanFiles(src string) ([]string, error) {
 	return srcFiles, nil
 }
 
-// underscoreName 驼峰转字符串命名，在决定生成的文件名的时候需要这个方法
+// underscoreName 驼峰转字符串命名
 // 可以用正则表达式，然而我写不出来，我是正则渣
 func underscoreName(name string) string {
 	var buf []byte
